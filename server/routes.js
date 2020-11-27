@@ -15,6 +15,7 @@ for (let r = 0; r < row.length; r++) {
     };
   }
 }
+//console.log(seats);
 // ----------------------------------
 //////// HELPERS
 const getRowName = (rowIndex) => {
