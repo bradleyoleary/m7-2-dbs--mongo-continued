@@ -75,6 +75,12 @@ const bookSeat = async (req, res) => {
     lastBookingAttemptSucceeded = !lastBookingAttemptSucceeded;
     console.log(lastBookingAttemptSucceeded);
 
+    if (fullName === "" && email === "") {
+      return res
+        .status(400)
+        .json({ status: 400, message: "Please provide your name and email!" });
+    }
+
     res.status(200).json({ status: 200, seat: seatId, fullName, email });
   } catch (error) {
     console.log(error.stack);
