@@ -33,10 +33,57 @@ const getSeats = async (req, res) => {
       .json({ status: 200, seats: seatData, numOfRows, seatsPerRow });
   } catch (error) {
     console.log(error.stack);
-    res.status(500).json({ status: 500, data: req.body, message: err.message });
+    res
+      .status(500)
+      .json({ status: 500, data: req.body, message: error.message });
   }
   client.close();
   console.log("disconnected!");
 };
 
-module.exports = { getSeats };
+const bookSeat = async (req, res) => {
+  const { seatId, creditCard, expiration } = req.body;
+  const filter = { _id: seatId };
+  const updatedBooking = { $set: { isBooked: true } };
+
+  if (!creditCard || !expiration) {
+    return res.status(400).json({
+      status: 400,
+      message: "Please provide credit card information!",
+    });
+  }
+
+  let lastBookingAttemptSucceeded = false;
+  console.log(lastBookingAttemptSucceeded);
+
+  if (lastBookingAttemptSucceeded) {
+    lastBookingAttemptSucceeded = !lastBookingAttemptSucceeded;
+
+    return res.status(500).json({
+      message: "An unknown error has occurred. Please try your request again.",
+    });
+  }
+  //create new client
+  const client = await MongoClient(MONGO_URI, options);
+  try {
+    //connect to client
+    await client.connect();
+    const db = client.db("ticket_booker");
+    console.log("connected!");
+    await db.collection("seats").updateOne(filter, updatedBooking);
+
+    lastBookingAttemptSucceeded = !lastBookingAttemptSucceeded;
+    console.log(lastBookingAttemptSucceeded);
+
+    res.status(200).json({ status: 200, seat: seatId });
+  } catch (error) {
+    console.log(error.stack);
+    res
+      .status(500)
+      .json({ status: 500, data: req.body, message: error.message });
+  }
+  client.close();
+  console.log("disconnected");
+};
+
+module.exports = { getSeats, bookSeat };
