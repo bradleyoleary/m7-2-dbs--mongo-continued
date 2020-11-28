@@ -42,9 +42,9 @@ const getSeats = async (req, res) => {
 };
 
 const bookSeat = async (req, res) => {
-  const { seatId, creditCard, expiration } = req.body;
+  const { seatId, creditCard, expiration, fullName, email } = req.body;
   const filter = { _id: seatId };
-  const updatedBooking = { $set: { isBooked: true } };
+  const updatedBooking = { $set: { isBooked: true, fullName, email } };
 
   if (!creditCard || !expiration) {
     return res.status(400).json({
@@ -75,7 +75,7 @@ const bookSeat = async (req, res) => {
     lastBookingAttemptSucceeded = !lastBookingAttemptSucceeded;
     console.log(lastBookingAttemptSucceeded);
 
-    res.status(200).json({ status: 200, seat: seatId });
+    res.status(200).json({ status: 200, seat: seatId, fullName, email });
   } catch (error) {
     console.log(error.stack);
     res
